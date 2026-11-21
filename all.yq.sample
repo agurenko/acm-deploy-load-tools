@@ -1,0 +1,73 @@
+all:
+  rhacm_disconnected_registry: <bastion host>
+  gogs_host: '[fc00:1010::1]'
+  http_store_host: '[fc00:1010::1]'
+  oadp_s3Url: http://{{ rhacm_disconnected_registry }}:9000
+  s3_access_key_id: CHANGE_ME
+  s3_secret_access_key: CHANGE_ME
+  # ZTP and SNO manifests
+  setup_ran_du_ztp: true
+  setup_ztp_sno_policy: true
+  ztp_repo_branch: release-4.22
+  ztp_repo_type: telco-reference
+  ztp_site_generator_image_tag: v4.22.0-1
+  rhacm_policy_generator_image_tag: sha256-004fa5df124d40038577230ccefc75787f463f7be03a15877535788a0b3b3a4d
+  operator_index_tag: v4.22-du
+  du_profile_version: '4.22'
+  sno_du_profile: '4.22'
+  include_varlibcontainers_partitioned_extra_manifests: true
+  include_oadp_operator: true
+  include_lca_operator: true
+  cluster_applications_count: 5
+  cluster_image_set: openshift-{{ seed_image_version }}
+  # Hub deployment and release images
+  acm_source: cs-redhat-operator-index-v4-22-hub
+  acm_channel: release-2.17
+  rhacm_quay_pullsecret: '{}'
+  setup_rhacm_observability: true
+  setup_talm_operator: true
+  talm_operator_source: cs-redhat-operator-index-v4-22-hub
+  setup_talm_repo: false
+  acm_enable_siteconfig: true
+  mce_enable_ibio: true
+  setup_rhacm_search_pv: true
+  rhacm_search_storage_class: ocs-storagecluster-cephfs
+  agentservice_sc: ocs-storagecluster-cephfs
+  setup_asc_disable_image_policy: true
+  mce_assisted_ocp_versions:
+    - quay.io/openshift-release-dev/ocp-release:4.22.21-x86_64
+  mce_clusterimagesets:
+    - name: openshift-4.22.21
+      releaseImage: '{{ rhacm_disconnected_registry }}:5000/openshift/release-images:4.22.21-x86_64'
+  # IBI part configuration
+  seed_cluster: vm00001
+  seed_image_version: 4.22.21
+  ibu_seed_image_version: 4.22.21
+  ocp_ibi_version: quay.io/openshift-release-dev/ocp-release:4.22.21-x86_64
+  hv_vm_target: vm00005
+  ibi_prep_iso_ignitionConfigOverride: '{"ignition": {"version":"3.2.0"}, "passwd": {"users": [{"groups": ["sudo"],"name": "core","passwordHash":"CHANGE_ME"}]},"storage": {"files": [{"path": "/etc/containers/policy.json", "mode": 420, "overwrite": true, "contents": {"source": "data:text/plain;charset=utf-8;base64,ewogICAgImRlZmF1bHQiOiBbCiAgICAgICAgewogICAgICAgICAgICAidHlwZSI6ICJpbnNlY3VyZUFjY2VwdEFueXRoaW5nIgogICAgICAgIH0KICAgIF0sCiAgICAidHJhbnNwb3J0cyI6CiAgICAgICAgewogICAgICAgICAgICAiZG9ja2VyLWRhZW1vbiI6CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgIiI6IFt7InR5cGUiOiJpbnNlY3VyZUFjY2VwdEFueXRoaW5nIn1dCiAgICAgICAgICAgICAgICB9CiAgICAgICAgfQp9"}}]}}'
+  force_extract: true
+  ibi_prepare_disk_file: true
+  ibi_hv_copy_disk_file: true
+  ibi_replace_sno_disk_file: false
+
+telco-core:
+  # Overrides from step4-telco-core-manifests.sh for ansible/vars/telco-core.sample.yml.
+  # Legacy telco-core profile; the script's playbook invocation is commented out.
+  core_cluster_image_set: openshift-4.22.21
+  core_cluster_base_domain: example.lab
+
+  # 32 x 17 node cluster profile from the active heredoc
+  cluster_definitions:
+    - workers: 14
+      labels:
+        size: "xsmall"
+    - workers: 14
+      labels:
+        size: "xsmall"
+    - workers: 14
+      labels:
+        size: "xsmall"
+  telco_core_include_managedclusteraddon_cpc_tune: true
+  telco_core_clusterinstance_extra_manifests: true
+  telco_core_clusterinstance_custom_manifests: true
