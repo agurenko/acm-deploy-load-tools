@@ -121,12 +121,12 @@ step4-ibu-prepare-seed-cluster: check-inventory check-all-vars
 ibi-prepare-snos: step5-ibi-prepare-snos
 step5-ibi-prepare-snos: check-inventory check-all-vars
 	(time ansible-playbook -i "$(INV_FILE)" ansible/ibi-prepare-snos.yml --forks 50 \
-		-e ibi_prepare_disk_file=true -e ibi_hv_copy_disk_file=true -e ibi_replace_sno_disk_file=false)
+		-e '{"ibi_prepare_disk_file": true, "ibi_hv_copy_disk_file": true, "ibi_replace_sno_disk_file": false}')
 
 ibi-replace-disks: step6-ibi-replace-disks
 step6-ibi-replace-disks: check-inventory check-all-vars
 	(time ansible-playbook -i "$(INV_FILE)" ansible/ibi-prepare-snos.yml --forks 50 \
-		-e ibi_prepare_disk_file=false -e ibi_hv_copy_disk_file=false -e ibi_replace_sno_disk_file=true)
+		-e '{"ibi_prepare_disk_file": false, "ibi_hv_copy_disk_file": false, "ibi_replace_sno_disk_file": true}')
 
 # ---------------------------------------------------------------------------
 # Pre-defined commonly used flows
